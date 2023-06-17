@@ -1,27 +1,53 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div class="app">
+    <button @click="handleSorting('name')">name</button>
+    <button @click="handleSorting('surname')">surname</button>
+    <button @click="handleSorting('visitAt')">at</button>
+
+    <VisitsList :visits="Visits" :order="order" />
+    <TestComponent />
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { defineComponent, ref } from "vue";
+import IVisit from "@/types/Visit";
+import OrderBy from "@/types/OrderBy";
+
+import VisitsList from "./components/VisitsList.vue";
+import TestComponent from "./components/TestComponent.vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
+    VisitsList,
+    TestComponent,
+  },
+  setup() {
+    const Visits = ref<IVisit[]>([
+      { name: "klkl", surname: "atest", visitAt: "223", visitId: "" },
+      { name: "ajkkhhjhhjh", surname: "test", visitAt: "255", visitId: "" },
+    ]);
+
+    const order = ref<OrderBy>("name");
+
+    const handleSorting = function (neworder: OrderBy) {
+      order.value = neworder;
+    };
+    //const state = reactive({name:"25" as string|number})
+    //return {...toRefs(state)}
+    //const state = reactive({name:"25" as string|number})
+    // const name =  ref<number|string|IVisit>("jkkjkjkjkjkjk")
+    return { Visits, handleSorting, order };
+  },
+  //
+  //methods:{
+  //  onMy(s:string){
+  //      this.Visits=[{name:s,surname:"test",visitAt:"2",visitId:""}];
+  //  },
+  //},
 });
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style>
 </style>
