@@ -6,7 +6,7 @@
       v-for="visit in OrderedVisits"
       :key="visit.visitId"
       class="row "
-      v-bind:class=" visit.visitId!==SelectedId ? 'bg-white' : 'bg-info'"
+      v-bind:class=" visit.visitId!==SelectedId ? 'bg-white' : 'bg-secondary'"
       @click="onItemClick(visit.visitId)"
     >
       <div class="col-4 border text-break">

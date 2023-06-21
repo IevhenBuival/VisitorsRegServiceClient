@@ -1,5 +1,5 @@
 <template>
-      <div class="row border bg-secondary font-weight-bold text-center">
+      <div class="row border bg-dark text-white font-weight-bold text-center">
         <TableHatCell :order="order" :title="'name'" v-on:handleSorting="handleSorting" />
         <TableHatCell :order="order" :title="'surname'" v-on:handleSorting="handleSorting" />
         <TableHatCell :order="order" :title="'visitAt'" v-on:handleSorting="handleSorting" />
