@@ -26,7 +26,7 @@
 <script lang="ts">
 import { IOrder } from "../types/OrderBy";
 import IVisit from "../types/visit";
-import { computed, defineComponent, PropType } from "vue";
+import { computed, defineComponent, PropType, ref } from 'vue';
 export default defineComponent({
   name: "VisitList",
   components: {
@@ -47,7 +47,7 @@ export default defineComponent({
       type: String,
     }
   },
-  setup(props) {
+  setup(props,{ emit }) {
     const OrderedVisits = computed((): IVisit[] =>
       [...props.visits].sort((a: IVisit, b: IVisit): number =>
         a[props.order.order] > b[props.order.order]
@@ -59,13 +59,14 @@ export default defineComponent({
           : -1
       )
     );
-    return { OrderedVisits };
+    const onItemClick = (id:string) => {
+      emit("reselectItem", id);
+    };
+
+  
+    return { OrderedVisits,onItemClick};
   },
-  methods: {
-    onItemClick: function (id:string) {
-      this.$emit("reselectItem", id);
-    },
-  },
+
 });
 </script>
 
