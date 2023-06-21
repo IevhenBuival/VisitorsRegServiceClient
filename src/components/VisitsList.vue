@@ -1,12 +1,10 @@
 <template>
-   <div  class="container h-100 w-100 flex-fill flex-grow overflow-scroll" >
-  
- <div
-   
+  <div class="container h-100 w-100 flex-fill flex-grow overflow-scroll">
+    <div
       v-for="visit in OrderedVisits"
       :key="visit.visitId"
-      class="row "
-      v-bind:class=" visit.visitId!==SelectedId ? 'bg-white' : 'bg-secondary'"
+      class="row"
+      v-bind:class="visit.visitId !== SelectedId ? 'bg-white' : 'bg-secondary'"
       @click="onItemClick(visit.visitId)"
     >
       <div class="col-4 border text-break">
@@ -20,18 +18,15 @@
       </div>
     </div>
   </div>
- 
 </template>
 
 <script lang="ts">
 import { IOrder } from "../types/OrderBy";
 import IVisit from "../types/visit";
-import { computed, defineComponent, PropType, ref } from 'vue';
+import { computed, defineComponent, PropType, ref } from "vue";
 export default defineComponent({
   name: "VisitList",
-  components: {
-   
-  },
+  components: {},
   emits: ["reselectItem"],
   props: {
     visits: {
@@ -45,9 +40,9 @@ export default defineComponent({
     SelectedId: {
       required: true,
       type: String,
-    }
+    },
   },
-  setup(props,{ emit }) {
+  setup(props, { emit }) {
     const OrderedVisits = computed((): IVisit[] =>
       [...props.visits].sort((a: IVisit, b: IVisit): number =>
         a[props.order.order] > b[props.order.order]
@@ -59,14 +54,12 @@ export default defineComponent({
           : -1
       )
     );
-    const onItemClick = (id:string) => {
+    const onItemClick = (id: string) => {
       emit("reselectItem", id);
     };
 
-  
-    return { OrderedVisits,onItemClick};
+    return { OrderedVisits, onItemClick };
   },
-
 });
 </script>
 

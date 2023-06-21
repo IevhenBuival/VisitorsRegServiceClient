@@ -1,16 +1,12 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center">
-    
-                  <img src="@/components/pics/loader.gif" alt="">
-             
-            </div>
+  <div class="d-flex justify-content-center align-items-center">
+    <img src="@/components/pics/loader.gif" alt="" />
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
-export default defineComponent({
-
-})
+export default defineComponent({});
 </script>
 
 <style scoped>
@@ -34,11 +30,11 @@ export default defineComponent({
 
 @keyframes rotating {
   from {
-      transform: translate(-50px,0);
+    transform: translate(-50px, 0);
   }
 
   to {
-      transform: translate(50px,0);
+    transform: translate(50px, 0);
   }
 }
 </style>

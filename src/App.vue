@@ -83,7 +83,7 @@ export default defineComponent({
         if (method === "GetAll") {
           const res = await VisitHooks.getVisitsHook();
           this.Visits = [...res];
-        } else if (method === "RemoveUser") {
+        } else if (method === "RemoveItem") {
           await VisitHooks.deleteVisitHook(this.SelectedVisitId.id);
           this.SelectedVisitId.id = "";
         } else if (props) {
@@ -91,10 +91,10 @@ export default defineComponent({
             name: stringGuard(props?.name),
             surname: stringGuard(props?.surname),
           };
-          if (method === "AddUser") {
+          if (method === "AddItem") {
             const res = await VisitHooks.postVisitHook(body);
             this.SelectedVisitId.id = stringGuard(res.visitId);
-          } else if (method === "EditUser") {
+          } else if (method === "EditItem") {
             await VisitHooks.putVisitHook(this.SelectedVisitId.id, body);
           }
         }
@@ -104,13 +104,13 @@ export default defineComponent({
         if (method === "GetAll") {
           errormessage =
             "Помилка завантаження даних. Спробуйте оновити сторінку";
-        } else if (method === "AddUser") {
+        } else if (method === "AddItem") {
           errormessage =
             "Помилка створення візиту відвідувача. Спробуйте оновити сторінку";
-        } else if (method === "RemoveUser") {
+        } else if (method === "RemoveItem") {
           errormessage =
             "Помилка видалення візиту відвідувача. Спробуйте оновити сторінку";
-        } else if (method === "EditUser") {
+        } else if (method === "EditItem") {
           errormessage =
             "Помилка оновлення візиту відвідувача. Спробуйте оновити сторінку";
         }
@@ -120,7 +120,12 @@ export default defineComponent({
       this.loadDate.loading = false;
     },
     async getVisits() {
-      await this.CallerWrapper("GetAll");
+      await this.CallerWrapper("GetAll").then(() => {
+        this.SelectedVisitId.id =
+          this.SelectedVisitId.id !== ""
+            ? this.SelectedVisitId.id
+            : findFirstFormSorted(this.Visits, this.order);
+      });
     },
 
     setSelectedVisitId(newId: string) {
@@ -129,13 +134,16 @@ export default defineComponent({
     },
 
     onClickMenuButton: function (type: string) {
-      this.dialog.dialogProps = { type: type };
+      const props = { type: type };
+      //if (type="AddItem")
+      this.dialog.dialogProps = props;
       this.dialog.show = true;
     },
     onAsyncFunc: async function (props: IDialogItem) {
       try {
         if (props.event === "Ok" && props?.method) {
           await this.CallerWrapper(props?.method, props);
+          await this.getVisits();
         }
       } catch (error) {
         console.error("unexpected error");
@@ -147,12 +155,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.getVisits().then(() => {
-      this.SelectedVisitId.id =
-        this.SelectedVisitId.id !== ""
-          ? this.SelectedVisitId.id
-          : findFirstFormSorted(this.Visits, this.order);
-    });
+    this.getVisits();
   },
 });
 </script>

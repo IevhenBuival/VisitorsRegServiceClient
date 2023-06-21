@@ -3,6 +3,8 @@ type EventType = "Ok" | "Cancel";
 export interface IDialogProps {
   type: string;
   visitId?: string;
+  name?: string;
+  surname?: string;
 }
 
 export interface IDialogItem {
