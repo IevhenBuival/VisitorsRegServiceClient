@@ -3,15 +3,18 @@
     <form class="ui form" novalidate novalidatemetod="dialog" @submit.prevent>
       <div class="container d-flex flex-column justify-content-between">
         <h4>{{ title }}</h4>
+        <h3 v-if="dialogProps.type === 'RemoveItem'">{{ dialogProps.name+" "+dialogProps.surname }}</h3>
         <div v-if="dialogProps.type !== 'RemoveItem'">
           <ShowDialogInput
             :label="'Ім\'я'"
             :name="'name'"
+           
             v-model="dialogData.name"
           />
           <ShowDialogInput
             :label="'surname'"
             :name="'surname'"
+           
             v-model="dialogData.surname"
           />
         </div>
@@ -58,14 +61,9 @@ export default defineComponent({
   emits: ["onClickCallback"],
   setup(props, { emit }) {
     let dialogData = reactive({
-      name: "",
-      surname: "",
+      name: props.dialogProps.name?props.dialogProps.name:"",
+      surname: props.dialogProps.surname?props.dialogProps.surname:"",
     });
-    if (props.dialogProps.type === "RemoveItem") {
-      //setup hidden fields fore remove button
-      dialogData.name = "1";
-      dialogData.surname = "1";
-    }
     const { errors } = useFormValidation();
     const { isSignupButtonDisabled } = useSubmitButtonState(dialogData, errors);
 

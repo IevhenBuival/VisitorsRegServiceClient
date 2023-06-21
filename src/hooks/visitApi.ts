@@ -44,7 +44,7 @@ export const putVisitHook = async (
   bodydata: IVisitBody
 ): Promise<IVisit> => {
   try {
-    const { data } = await axios.post(url + "/" + id, bodydata);
+    const { data } = await axios.put(url + "/" + id, bodydata);
     return data.visit;
   } catch (error) {
     throw new Error("Error to create visitor");

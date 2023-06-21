@@ -22,6 +22,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import useFormValidation from "@/modules/useFormValidation";
+import stringGuard from "@/modules/stringGuard";
 
 export default defineComponent({
   name: "ShowDialogInput",
@@ -41,7 +42,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    let input = ref(null);
+    let input = ref(stringGuard(props.modelValue));
     const { validateNameField, errors } = useFormValidation();
     const validateInput = () => {
       validateNameField(props.name, input.value);

@@ -38,7 +38,7 @@ import LoaderGif from "@/components/LoaderGif.vue";
 import ShowDialog from "@/components/ShowDialog.vue";
 import TableHat from "@/components/TableHat.vue";
 import * as VisitHooks from "@/hooks/visitApi";
-import IDialog, { IDialogItem } from "@/types/Dialog";
+import IDialog, { IDialogItem, IDialogProps } from "@/types/Dialog";
 import stringGuard from "@/modules/stringGuard";
 import { findFirstFormSorted } from "./modules/findFirstFromSorted";
 
@@ -63,7 +63,7 @@ export default defineComponent({
   },
   setup() {
     const order = ref<IOrder>({ order: "name", reverse: true });
-    const SelectedVisitId = reactive({ id: "" });
+    const SelectedVisitId = reactive({ id: "", name: "", surname: "" });
     const Visits = [] as IVisit[];
 
     const handleSorting = function (neworder: OrderBy) {
@@ -133,9 +133,19 @@ export default defineComponent({
       this.firstInVisit = newId;
     },
 
+    getCurrentVisitItem() {
+      return this.Visits.find((i) => i.visitId === this.SelectedVisitId.id);
+    },
+
     onClickMenuButton: function (type: string) {
-      const props = { type: type };
-      //if (type="AddItem")
+      const props: IDialogProps = { type: type };
+      if (type !== "AddItem") {
+        const currentVisit = this.getCurrentVisitItem();
+        if (currentVisit) {
+          props.name = currentVisit.name;
+          props.surname = currentVisit.surname;
+        }
+      }
       this.dialog.dialogProps = props;
       this.dialog.show = true;
     },
