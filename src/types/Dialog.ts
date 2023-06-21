@@ -7,6 +7,9 @@ export interface IDialogProps {
 
 export interface IDialogItem {
   event: EventType;
+  method?: string;
+  name?: string;
+  surname?: string;
   visitId?: string;
 }
 

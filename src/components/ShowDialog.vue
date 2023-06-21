@@ -1,24 +1,18 @@
 <template>
   <dialog ref="dialog" class="zindex-modal">
-    <form metod="dialog">
+    
+    <form class="ui form"  novalidate novalidatemetod="dialog" @submit.prevent>
       <div class="container d-flex  flex-column justify-content-between">
         <h4>{{ title }}</h4>
        <div v-if="dialogProps.type!=='RemoveUser'">
-        <label class="form-label">
-          Ім'я
-        </label>
-        
-        <input type="text" class="form-control mb-2" placeholder="введіть ім'я"/>
-        <label class="form-label">
-          Фамілія
-        </label>
-        <input type="text" class="form-control" placeholder="введіть фамілію"/>
-      </div>
+        <ShowDialogInput :label="'Ім\'я'" :name="'name'" v-model="dialogData.name" />
+        <ShowDialogInput :label="'surname'" :name="'surname'" v-model="dialogData.surname" />
+</div> 
         <br>
 
         <div class="w-100 d-flex flex-row  ">
           <div class="px-2 mw-50 flex-grow ">
-          <button class="btn w-100 btn-secondary " type="submit" formmethod="dialog" @click="onSasbmitDialog">
+          <button class="ui btn w-100 btn-secondary " title="Заповніть всі поля введення" type="button" :disabled="isSignupButtonDisabled"  formmethod="dialog" @click="onSasbmitDialog">
             Підтвердити
           </button>
         </div>
@@ -39,13 +33,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, PropType } from "vue";
+import { defineComponent, ref, onMounted, PropType, reactive } from 'vue';
 import { IDialogItem, IDialogProps } from "@/types/Dialog";
-
+import ShowDialogInput from '@/components/ShowDialogInput.vue';
+import useFormValidation from '@/modules/useFormValidation';
+import useSubmitButtonState from '@/modules/useSubmitButtonState';
 export default defineComponent({
   name: "ShowDialog",
+  components:{ShowDialogInput},
   emits: ["onClickCallback"],
-  setup(_, { emit }) {
+  setup(props, { emit }) {
+
+    let dialogData =reactive({
+      name: "",
+      surname: "",
+    });
+    if (props.dialogProps.type==="RemoveUser")
+    {
+      //setup hidden fields fore remove button
+      dialogData.name="1";
+      dialogData.surname="1";
+    }
+    const { errors } = useFormValidation();
+      const { isSignupButtonDisabled } = useSubmitButtonState(dialogData, errors);
+      
+
+   
+ 
+
     const dialog = ref<HTMLDialogElement | null>(null);
     function onCloseDialog() {
       if (dialog.value) dialog.value.close();
@@ -69,7 +84,15 @@ export default defineComponent({
         });
       }
     });
-    return { dialog, onCloseDialog };
+ 
+
+    return { dialog, dialogData,onCloseDialog,isSignupButtonDisabled };
+    
+  },
+  data() {
+    return {
+      inputname:"",
+    }
   },
   props: {
     dialogProps: {
@@ -79,7 +102,8 @@ export default defineComponent({
   },
   methods: {
     onSasbmitDialog: function () {
-      const DialogProps: IDialogItem = { event: "Ok" };
+      const DialogProps: IDialogItem = { event: "Ok",method:this.dialogProps.type,name:this.dialogData.name,surname:this.dialogData.surname };
+     
       this.$emit("onClickCallback", DialogProps);
     },
   },

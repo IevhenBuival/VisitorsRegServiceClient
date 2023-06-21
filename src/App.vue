@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid vh-100 w-100 d-flex flex-column">
+   
     <HeadContainer v-on:onClickGo="onClickMenuButton" />
 
     <div class="container w-100 bg-danger flex-shrink-0">
@@ -40,7 +41,6 @@ import TableHat from "@/components/TableHat.vue";
 import * as VisitHooks from "@/hooks/visitApi";
 import IDialog, { IDialogItem } from "@/types/Dialog";
 
-
 //getVisits();
 
 export default defineComponent({
@@ -52,6 +52,7 @@ export default defineComponent({
     LoaderGif,
     ShowDialog,
     TableHat,
+    
   },
   data() {
     return {
@@ -98,9 +99,11 @@ export default defineComponent({
       this.dialog.dialogProps = { type: type };
       this.dialog.show = true;
     },
-    onDialogChoice: function (props: IDialogItem) {
+    onDialogChoice:  function (props: IDialogItem) {
       this.dialog.show = false;
       console.log(props.event);
+      console.log(props.method);
+      console.log( this.SelectedVisitId);
     },
   },
   mounted() {
