@@ -1,53 +1,110 @@
 <template>
-  <div class="app">
-    <button @click="handleSorting('name')">name</button>
-    <button @click="handleSorting('surname')">surname</button>
-    <button @click="handleSorting('visitAt')">at</button>
+  <div class="container-fluid vh-100 w-100 d-flex flex-column">
+    <HeadContainer v-on:onClickGo="onClickMenuButton" />
 
-    <VisitsList :visits="Visits" :order="order" />
-    <TestComponent />
+    <div class="container w-100 bg-danger flex-shrink-0">
+      <TableHat :order="order" v-on:handleSorting="handleSorting" />
+    </div>
+
+    <LoaderGif v-if="loadDate.loading" />
+
+    <ErrorBlock v-if="loadDate.error.show" :text="loadDate.error.message" />
+
+    <VisitsList
+      v-else
+      :visits="Visits"
+      :order="order"
+      :handleSorting="handleSorting"
+    />
+
+    <ShowDialog
+      v-if="dialog.show"
+      v-on:onClickCallback="onDialogChoice"
+      :dialogProps="dialog.dialogProps"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import IVisit from "@/types/Visit";
-import OrderBy from "@/types/OrderBy";
+import IVisit from "@/types/visit";
+import OrderBy, { IOrder } from "@/types/OrderBy";
+import VisitsList from "@/components/VisitsList.vue";
+import HeadContainer from "@/components/HeadContainer.vue";
+import ErrorBlock from "@/components/ErrorBlock.vue";
+import LoaderGif from "@/components/LoaderGif.vue";
+import ShowDialog from "@/components/ShowDialog.vue";
+import TableHat from "@/components/TableHat.vue";
+import * as VisitHooks from "@/hooks/visitApi";
+import IDialog, { IDialogItem } from "@/types/Dialog";
 
-import VisitsList from "./components/VisitsList.vue";
-import TestComponent from "./components/TestComponent.vue";
+
+//getVisits();
 
 export default defineComponent({
   name: "App",
   components: {
     VisitsList,
-    TestComponent,
+    HeadContainer,
+    ErrorBlock,
+    LoaderGif,
+    ShowDialog,
+    TableHat,
+  },
+  data() {
+    return {
+      Visits: [] as IVisit[],
+      SelectedVisitId: "",
+      loadDate: { error: { show: false, message: "" }, loading: true },
+      dialog: { show: false, dialogProps: { type: "type" } } as IDialog,
+    };
   },
   setup() {
-    const Visits = ref<IVisit[]>([
-      { name: "klkl", surname: "atest", visitAt: "223", visitId: "" },
-      { name: "ajkkhhjhhjh", surname: "test", visitAt: "255", visitId: "" },
-    ]);
-
-    const order = ref<OrderBy>("name");
+    const order = ref<IOrder>({ order: "name", reverse: true });
 
     const handleSorting = function (neworder: OrderBy) {
-      order.value = neworder;
+      if (order.value.order !== neworder) order.value.reverse = false;
+      else order.value.reverse = !order.value.reverse;
+      order.value.order = neworder;
     };
     //const state = reactive({name:"25" as string|number})
     //return {...toRefs(state)}
-    //const state = reactive({name:"25" as string|number})
-    // const name =  ref<number|string|IVisit>("jkkjkjkjkjkjk")
-    return { Visits, handleSorting, order };
+    return { handleSorting, order };
   },
+
   //
-  //methods:{
-  //  onMy(s:string){
-  //      this.Visits=[{name:s,surname:"test",visitAt:"2",visitId:""}];
-  //  },
-  //},
+  methods: {
+    async getVisits() {
+      this.loadDate.error.show = false;
+      this.loadDate.loading = true;
+      try {
+        const res = await VisitHooks.getVisitsHook();
+        this.Visits = [...res];
+        if (this.Visits.length>0)this.SelectedVisitId = this.Visits[0].visitId;
+      } catch (error) {
+        this.loadDate.error.show = true;
+        this.loadDate.error.message =
+          "Помилка загрузки даних. Спробуйте оновити сторінку";
+      }
+      this.loadDate.loading = false;
+    },
+    onClickMenuButton: function (type: string) {
+      this.dialog.dialogProps = { type: type };
+      this.dialog.show = true;
+    },
+    onDialogChoice: function (props: IDialogItem) {
+      this.dialog.show = false;
+      console.log(props.event);
+    },
+  },
+  mounted() {
+    this.getVisits();
+  },
 });
 </script>
 
 <style>
+body {
+  height: 100vh;
+}
 </style>

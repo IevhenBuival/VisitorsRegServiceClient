@@ -1,23 +1,35 @@
 <template>
-  <div>
-    <p>jkjkjk</p>
-    <p>{{ visits }}</p>
-    <ul>
-      <li v-for="visit in OrderedVisits" :key="visit.visitId">
-        <h2>{{ visit.name }}</h2>
-        <h2>{{ visit.surname }}</h2>
-        <h3>{{ visit.visitAt }}</h3>
-      </li>
-    </ul>
+   <div  class="container h-100 w-100 flex-fill flex-grow overflow-scroll" >
+  
+ <div
+   
+      v-for="visit in OrderedVisits"
+      :key="visit.visitId"
+      class="row bg-white"
+    >
+      <div class="col-4 border text-break">
+        {{ visit.name }}
+      </div>
+      <div class="col-4 border text-break">
+        {{ visit.surname }}
+      </div>
+      <div class="col-4 border text-break">
+        {{ visit.visitAt }}
+      </div>
+    </div>
   </div>
+ 
 </template>
 
 <script lang="ts">
-import OrderBy from "../types/OrderBy";
-import IVisit from "../types/Visit";
+import { IOrder } from "../types/OrderBy";
+import IVisit from "../types/visit";
 import { computed, defineComponent, PropType } from "vue";
-
 export default defineComponent({
+  name: "VisitList",
+  components: {
+   
+  },
   props: {
     visits: {
       required: true,
@@ -25,13 +37,23 @@ export default defineComponent({
     },
     order: {
       required: true,
-      type: String as PropType<OrderBy>,
+      type: Object as PropType<IOrder>,
+    },
+    handleSorting: {
+      type: Function,
+      default: () => true,
     },
   },
   setup(props) {
-    const OrderedVisits = computed(():IVisit[] =>
-      [...props.visits].sort((a: IVisit, b: IVisit):number =>
-        a[props.order] > b[props.order] ? 1 : -1
+    const OrderedVisits = computed((): IVisit[] =>
+      [...props.visits].sort((a: IVisit, b: IVisit): number =>
+        a[props.order.order] > b[props.order.order]
+          ? props.order.reverse
+            ? -1
+            : 1
+          : props.order.reverse
+          ? 1
+          : -1
       )
     );
     return { OrderedVisits };
@@ -39,5 +61,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
