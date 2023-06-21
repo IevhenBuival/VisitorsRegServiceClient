@@ -15,6 +15,8 @@
       :visits="Visits"
       :order="order"
       :handleSorting="handleSorting"
+      :SelectedId="SelectedVisitId"
+      v-on:reselectItem="setSelectedVisitId"
     />
 
     <ShowDialog
@@ -88,6 +90,10 @@ export default defineComponent({
       }
       this.loadDate.loading = false;
     },
+    setSelectedVisitId(newId:string) {
+      this.SelectedVisitId=newId;
+    },
+
     onClickMenuButton: function (type: string) {
       this.dialog.dialogProps = { type: type };
       this.dialog.show = true;

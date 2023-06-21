@@ -27,6 +27,7 @@ export default defineComponent({
   components: {
     ArrowSvg,
   },
+  emits: ["handleSorting"],
   props: {
     order: {
       required: true,
@@ -36,23 +37,13 @@ export default defineComponent({
         required: true,
         type: String,
     },
-    handleSorting: {
-        type: Function,
-        default: () => true,
-      },
+
   },
   methods: {
     onClick: function (type:string) {
       this.$emit("handleSorting", type);
     },
   },
-  computed: {
-
-showIcon() {
-  //if (this.order.order === "EditUser")
-    return true;
-  
-},},
 });
 </script>
 

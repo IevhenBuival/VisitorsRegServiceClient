@@ -5,7 +5,9 @@
    
       v-for="visit in OrderedVisits"
       :key="visit.visitId"
-      class="row bg-white"
+      class="row "
+      v-bind:class=" visit.visitId!==SelectedId ? 'bg-white' : 'bg-info'"
+      @click="onItemClick(visit.visitId)"
     >
       <div class="col-4 border text-break">
         {{ visit.name }}
@@ -30,6 +32,7 @@ export default defineComponent({
   components: {
    
   },
+  emits: ["reselectItem"],
   props: {
     visits: {
       required: true,
@@ -39,10 +42,10 @@ export default defineComponent({
       required: true,
       type: Object as PropType<IOrder>,
     },
-    handleSorting: {
-      type: Function,
-      default: () => true,
-    },
+    SelectedId: {
+      required: true,
+      type: String,
+    }
   },
   setup(props) {
     const OrderedVisits = computed((): IVisit[] =>
@@ -57,6 +60,11 @@ export default defineComponent({
       )
     );
     return { OrderedVisits };
+  },
+  methods: {
+    onItemClick: function (id:string) {
+      this.$emit("reselectItem", id);
+    },
   },
 });
 </script>
