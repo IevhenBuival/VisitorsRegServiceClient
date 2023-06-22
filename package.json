@@ -6,7 +6,13 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "deploy": "aws s3 sync dist s3://visitorregistrationserver",
+    "lint": "vue-cli-service lint",
+    "creates3": "aws s3api create-bucket --bucket visitorregistrationserver  --region us-east-1",
+    "makes3asweb": "aws s3 website s3://visitorregistrationserver --index-document index.html --error-document index.html",
+    "s3access": "aws s3api put-public-access-block --bucket visitorregistrationserver --public-access-block-configuration 'BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false'",
+    "s3policy": "aws s3api put-bucket-policy --bucket visitorregistrationserver --policy file://policy_s3.json",
+    "testur": "curl http://visitorregistrationserver.s3-website.us-east-1.amazonaws.com"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",

@@ -2,19 +2,19 @@
   <dialog ref="dialog" class="zindex-modal">
     <form class="ui form" novalidate novalidatemetod="dialog" @submit.prevent>
       <div class="container d-flex flex-column justify-content-between">
-        <h4>{{ title }}</h4>
-        <h3 v-if="dialogProps.type === 'RemoveItem'">{{ dialogProps.name+" "+dialogProps.surname }}</h3>
+        <h4>{{ dialogProps.type === 'RemoveItem'?title+":":title }}</h4>
+        <h3 v-if="dialogProps.type === 'RemoveItem'">
+          {{ dialogProps.name + " " + dialogProps.surname }}
+        </h3>
         <div v-if="dialogProps.type !== 'RemoveItem'">
           <ShowDialogInput
             :label="'Ім\'я'"
             :name="'name'"
-           
             v-model="dialogData.name"
           />
           <ShowDialogInput
-            :label="'surname'"
+            :label="'Прізвіще'"
             :name="'surname'"
-           
             v-model="dialogData.surname"
           />
         </div>
@@ -61,8 +61,8 @@ export default defineComponent({
   emits: ["onClickCallback"],
   setup(props, { emit }) {
     let dialogData = reactive({
-      name: props.dialogProps.name?props.dialogProps.name:"",
-      surname: props.dialogProps.surname?props.dialogProps.surname:"",
+      name: props.dialogProps.name ? props.dialogProps.name : "",
+      surname: props.dialogProps.surname ? props.dialogProps.surname : "",
     });
     const { errors } = useFormValidation();
     const { isSignupButtonDisabled } = useSubmitButtonState(dialogData, errors);

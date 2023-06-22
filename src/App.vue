@@ -16,7 +16,10 @@
       :order="order"
       :handleSorting="handleSorting"
       :SelectedId="SelectedVisitId.id"
+      :forDeleteId="SelectedVisitId.forDelete"
+      :AddScroll="AddScroll"
       v-on:reselectItem="setSelectedVisitId"
+      v-on:offAddScroll="offAddScroll"
     />
 
     <ShowDialog
@@ -28,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, computed } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 import IVisit, { IVisitBody } from "@/types/visit";
 import OrderBy, { IOrder } from "@/types/OrderBy";
 import VisitsList from "@/components/VisitsList.vue";
@@ -62,16 +65,18 @@ export default defineComponent({
     };
   },
   setup() {
-    const order = ref<IOrder>({ order: "name", reverse: true });
-    const SelectedVisitId = reactive({ id: "", name: "", surname: "" });
+    const order = ref<IOrder>({ order: "name", reverse: false });
+    const SelectedVisitId = reactive({ id: "", forDelete: "" });
     const Visits = [] as IVisit[];
+    const AddScroll = ref(false);
 
     const handleSorting = function (neworder: OrderBy) {
       if (order.value.order !== neworder) order.value.reverse = false;
       else order.value.reverse = !order.value.reverse;
       order.value.order = neworder;
+      AddScroll.value =  true;
     };
-    return { Visits, handleSorting, order, SelectedVisitId };
+    return { Visits, handleSorting, order, SelectedVisitId,AddScroll };
   },
 
   //
@@ -85,7 +90,11 @@ export default defineComponent({
           this.Visits = [...res];
         } else if (method === "RemoveItem") {
           await VisitHooks.deleteVisitHook(this.SelectedVisitId.id);
-          this.SelectedVisitId.id = "";
+
+          this.SelectedVisitId.id = this.SelectedVisitId.forDelete;
+          this.SelectedVisitId.forDelete = "";
+          this.AddScroll=true;
+          
         } else if (props) {
           const body: IVisitBody = {
             name: stringGuard(props?.name),
@@ -94,6 +103,7 @@ export default defineComponent({
           if (method === "AddItem") {
             const res = await VisitHooks.postVisitHook(body);
             this.SelectedVisitId.id = stringGuard(res.visitId);
+            this.AddScroll = true;
           } else if (method === "EditItem") {
             await VisitHooks.putVisitHook(this.SelectedVisitId.id, body);
           }
@@ -128,9 +138,13 @@ export default defineComponent({
       });
     },
 
-    setSelectedVisitId(newId: string) {
+    setSelectedVisitId(newId: string, forDelete:string) {
       this.SelectedVisitId.id = newId;
-      this.firstInVisit = newId;
+      this.SelectedVisitId.forDelete = forDelete;
+    //  this.firstInVisit = index;
+    },
+    offAddScroll(){
+      this.AddScroll=false;
     },
 
     getCurrentVisitItem() {

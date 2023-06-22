@@ -8,7 +8,7 @@ type VisitResponse = {
   visit: IVisit;
 };
 
-const url = "https://fv3lr94tmg.execute-api.us-east-1.amazonaws.com/visit";
+const url = process.env.VUE_APP_SERVER_URL + "/visit";
 
 export const getVisitsHook = async (): Promise<IVisit[]> => {
   const { status, data } = await axios.get<GetVisitResponse>(url, {

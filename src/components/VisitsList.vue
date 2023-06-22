@@ -3,6 +3,7 @@
     <div
       v-for="visit in OrderedVisits"
       :key="visit.visitId"
+      :id="visit.visitId"
       class="row"
       v-bind:class="visit.visitId !== SelectedId ? 'bg-white' : 'bg-secondary'"
       @click="onItemClick(visit.visitId)"
@@ -23,11 +24,11 @@
 <script lang="ts">
 import { IOrder } from "../types/OrderBy";
 import IVisit from "../types/visit";
-import { computed, defineComponent, PropType, ref } from "vue";
+import { computed, defineComponent, PropType } from "vue";
 export default defineComponent({
   name: "VisitList",
   components: {},
-  emits: ["reselectItem"],
+  emits: ["reselectItem","offAddScroll"],
   props: {
     visits: {
       required: true,
@@ -41,7 +42,18 @@ export default defineComponent({
       required: true,
       type: String,
     },
+    forDeleteId:{
+      required:true,
+      type: String,
+    },
+    AddScroll: {
+      required: true,
+      type: Boolean,
+    },
+
+
   },
+  
   setup(props, { emit }) {
     const OrderedVisits = computed((): IVisit[] =>
       [...props.visits].sort((a: IVisit, b: IVisit): number =>
@@ -54,11 +66,46 @@ export default defineComponent({
           : -1
       )
     );
+    const UpdateforDelete=(id: string)=>{
+      const index = OrderedVisits.value.findIndex(item => item.visitId===id);
+      let fordelete = "";
+      if (OrderedVisits.value.length>=2) {
+        const newindex=((index-1)>0)?index-1:0;
+        fordelete=OrderedVisits.value[newindex].visitId;
+      }
+       
+      emit("reselectItem", id,fordelete);
+    }
     const onItemClick = (id: string) => {
-      emit("reselectItem", id);
+      UpdateforDelete(id);
+      emit("offAddScroll");
     };
 
-    return { OrderedVisits, onItemClick };
+    return { OrderedVisits, onItemClick,UpdateforDelete };
+  },
+  updated() {
+  this.$nextTick(function () {
+    if (this.forDeleteId===""){
+      this.UpdateforDelete(this.SelectedId);
+    }
+
+
+     if (this.AddScroll)
+    { const targetId = this.SelectedId;
+    const scrollToElement = () =>  {
+
+    const el = document.getElementById(targetId);
+    if (el) {
+        el.scrollIntoView();
+      }
+    }
+   
+    scrollToElement();
+   
+  }
+  
+    
+  })
   },
 });
 </script>
