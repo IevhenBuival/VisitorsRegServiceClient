@@ -34,12 +34,12 @@
 import { defineComponent, ref, reactive } from "vue";
 import IVisit, { IVisitBody } from "@/types/visit";
 import OrderBy, { IOrder } from "@/types/OrderBy";
-import VisitsList from "@/components/VisitsList.vue";
-import HeadContainer from "@/components/HeadContainer.vue";
+import VisitsList from "@/components/VisitTable/VisitsList.vue";
+import HeadContainer from "@/components/VisitTable/HeadButtonsContainer.vue";
 import ErrorBlock from "@/components/ErrorBlock.vue";
 import LoaderGif from "@/components/LoaderGif.vue";
-import ShowDialog from "@/components/ShowDialog.vue";
-import TableHat from "@/components/TableHat.vue";
+import ShowDialog from "@/components/DialogForm/ShowDialog.vue";
+import TableHat from "@/components/VisitTable/TableHat.vue";
 import * as VisitHooks from "@/hooks/visitApi";
 import IDialog, { IDialogItem, IDialogProps } from "@/types/Dialog";
 import stringGuard from "@/modules/stringGuard";
@@ -163,18 +163,19 @@ export default defineComponent({
       this.dialog.dialogProps = props;
       this.dialog.show = true;
     },
-    onAsyncFunc: async function (props: IDialogItem) {
+    onDBCangeUpdate: async function (props: IDialogItem) {
       try {
-        if (props.event === "Ok" && props?.method) {
+        if (props?.method)
           await this.CallerWrapper(props?.method, props);
           await this.getVisits();
-        }
+       
       } catch (error) {
         console.error("unexpected error");
       }
     },
     onDialogChoice: async function (props: IDialogItem) {
-      await this.onAsyncFunc(props);
+      if (props.event === "Ok")
+      await this.onDBCangeUpdate(props);
       this.dialog.show = false;
     },
   },

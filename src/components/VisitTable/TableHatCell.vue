@@ -20,8 +20,9 @@
 </template>
 
 <script lang="ts">
-import { IOrder } from "../types/OrderBy";
+
 import { defineComponent, PropType } from "vue";
+import { IOrder } from "@/types/OrderBy";
 import ArrowSvg from "@/components/svg/ArrowSvg.vue";
 export default defineComponent({
   name: "VisitList",

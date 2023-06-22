@@ -1,17 +1,17 @@
 <template>
   <div class="container flex bg-white flex-shrink-0">
     <div class="row">
-      <HeadButtons
+      <HeadButton
         :icon="'AddItem'"
         v-on:onClickButton="onClick"
         :title="'Додати відвідувача'"
       />
-      <HeadButtons
+      <HeadButton
         :icon="'RemoveItem'"
         v-on:onClickButton="onClick"
         :title="'Видалити відвідувача'"
       />
-      <HeadButtons
+      <HeadButton
         :icon="'EditItem'"
         v-on:onClickButton="onClick"
         :title="'Змінити відвідувача'"
@@ -21,11 +21,11 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import HeadButtons from "../components/HeadButtons.vue";
+import HeadButton from "@/components/VisitTable/HeadButton.vue";
 
 export default defineComponent({
   components: {
-    HeadButtons,
+    HeadButton,
   },
   emits: ["onClickGo"],
 

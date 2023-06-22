@@ -12,9 +12,9 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import AddUserSvg from "../components/svg/AddUserSvg.vue";
-import RemoveUserSvg from "../components/svg/RemoveUserSvg.vue";
-import EditUserSvg from "../components/svg/EditUserSvg.vue";
+import AddUserSvg from "@/components/svg/AddUserSvg.vue";
+import RemoveUserSvg from "@/components/svg/RemoveUserSvg.vue";
+import EditUserSvg from "@/components/svg/EditUserSvg.vue";
 
 export default defineComponent({
   components: {

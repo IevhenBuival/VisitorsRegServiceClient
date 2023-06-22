@@ -22,8 +22,8 @@
 </template>
 
 <script lang="ts">
-import { IOrder } from "../types/OrderBy";
-import IVisit from "../types/visit";
+import { IOrder } from "@/types/OrderBy";
+import IVisit from "@/types/visit";
 import { computed, defineComponent, PropType } from "vue";
 export default defineComponent({
   name: "VisitList",
@@ -67,14 +67,29 @@ export default defineComponent({
       )
     );
     const UpdateforDelete=(id: string)=>{
-      const index = OrderedVisits.value.findIndex(item => item.visitId===id);
       let fordelete = "";
+      let currentid = "";
+      if (id === "") {
+        if (OrderedVisits.value.length>=2) {
+        currentid = OrderedVisits.value[0].visitId;
+        fordelete=OrderedVisits.value[1].visitId;
+      }else if (OrderedVisits.value.length===1){
+        currentid = OrderedVisits.value[0].visitId;
+        fordelete="";
+      }else {
+        currentid = OrderedVisits.value[0].visitId;
+        fordelete = OrderedVisits.value[1].visitId;
+      }}else currentid=id;
+      const index = OrderedVisits.value.findIndex(item => item.visitId===currentid);
+      
       if (OrderedVisits.value.length>=2) {
         const newindex=((index-1)>0)?index-1:0;
         fordelete=OrderedVisits.value[newindex].visitId;
       }
+      
        
-      emit("reselectItem", id,fordelete);
+      
+      emit("reselectItem", currentid,fordelete);
     }
     const onItemClick = (id: string) => {
       UpdateforDelete(id);

@@ -28,7 +28,7 @@
               type="button"
               :disabled="isSignupButtonDisabled"
               formmethod="dialog"
-              @click="onSasbmitDialog"
+              @click="onSabmitDialog"
             >
               Підтвердити
             </button>
@@ -52,7 +52,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, PropType, reactive } from "vue";
 import { IDialogItem, IDialogProps } from "@/types/Dialog";
-import ShowDialogInput from "@/components/ShowDialogInput.vue";
+import ShowDialogInput from "@/components/DialogForm/ShowDialogInput.vue";
 import useFormValidation from "@/modules/useFormValidation";
 import useSubmitButtonState from "@/modules/useSubmitButtonState";
 export default defineComponent({
@@ -64,6 +64,7 @@ export default defineComponent({
       name: props.dialogProps.name ? props.dialogProps.name : "",
       surname: props.dialogProps.surname ? props.dialogProps.surname : "",
     });
+    
     const { errors } = useFormValidation();
     const { isSignupButtonDisabled } = useSubmitButtonState(dialogData, errors);
 
@@ -101,14 +102,14 @@ export default defineComponent({
     },
   },
   methods: {
-    onSasbmitDialog: function () {
+    onSabmitDialog: function () {
       const DialogProps: IDialogItem = {
         event: "Ok",
         method: this.dialogProps.type,
         name: this.dialogData.name,
         surname: this.dialogData.surname,
       };
-
+      if (this.dialog) this.dialog.close();
       this.$emit("onClickCallback", DialogProps);
     },
   },

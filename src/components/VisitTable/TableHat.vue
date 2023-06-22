@@ -19,9 +19,9 @@
 </template>
 
 <script lang="ts">
-import { IOrder } from "../types/OrderBy";
+import { IOrder } from "@/types/OrderBy";
 import { defineComponent, PropType } from "vue";
-import TableHatCell from "@/components/TableHatCell.vue";
+import TableHatCell from "@/components/VisitTable/TableHatCell.vue";
 export default defineComponent({
   name: "VisitList",
   components: {
