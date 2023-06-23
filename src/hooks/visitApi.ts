@@ -4,9 +4,6 @@ import axios from "axios";
 type GetVisitResponse = {
   visits: IVisit[];
 };
-type VisitResponse = {
-  visit: IVisit;
-};
 
 const url = process.env.VUE_APP_SERVER_URL + "/visit";
 

@@ -10,23 +10,10 @@
 
     <ErrorBlock v-if="loadDate.error.show" :text="loadDate.error.message" />
 
-    <VisitsList
-      v-else
-      :visits="Visits"
-      :order="order"
-      :handleSorting="handleSorting"
-      :SelectedId="SelectedVisitId.id"
-      :forDeleteId="SelectedVisitId.forDelete"
-      :AddScroll="AddScroll"
-      v-on:reselectItem="setSelectedVisitId"
-      v-on:offAddScroll="offAddScroll"
-    />
+    <VisitsList v-else :visits="Visits" :order="order" :handleSorting="handleSorting" :SelectedId="SelectedVisitId"
+      :AddScroll="AddScroll" v-on:reselectItem="setSelectedVisitId" v-on:offAddScroll="offAddScroll" />
 
-    <ShowDialog
-      v-if="dialog.show"
-      v-on:onClickCallback="onDialogChoice"
-      :dialogProps="dialog.dialogProps"
-    />
+    <ShowDialog v-if="dialog.show" v-on:onClickCallback="onDialogChoice" :dialogProps="dialog.dialogProps" />
   </div>
 </template>
 
@@ -44,6 +31,7 @@ import * as VisitHooks from "@/hooks/visitApi";
 import IDialog, { IDialogItem, IDialogProps } from "@/types/Dialog";
 import stringGuard from "@/modules/stringGuard";
 import { findFirstFormSorted } from "./modules/findFirstFromSorted";
+import { ISelector } from '@/types/Selector';
 
 
 export default defineComponent({
@@ -64,7 +52,7 @@ export default defineComponent({
   },
   setup() {
     const order = ref<IOrder>({ order: "name", reverse: false });
-    const SelectedVisitId = reactive({ id: "", forDelete: "" });
+    const SelectedVisitId = reactive({ id: "", undoId: "" } as ISelector);
     const Visits = [] as IVisit[];
     const AddScroll = ref(false);
 
@@ -73,9 +61,10 @@ export default defineComponent({
       if (order.value.order !== neworder) order.value.reverse = false;
       else order.value.reverse = !order.value.reverse;
       order.value.order = neworder;
-      AddScroll.value =  true;
+      AddScroll.value = true;
+      SelectedVisitId.undoId = "";
     };
-    return { Visits, handleSorting, order, SelectedVisitId,AddScroll };
+    return { Visits, handleSorting, order, SelectedVisitId, AddScroll };
   },
 
   // Wrapper to work whith hook
@@ -90,10 +79,10 @@ export default defineComponent({
         } else if (method === "RemoveItem") {
           await VisitHooks.deleteVisitHook(this.SelectedVisitId.id);
 
-          this.SelectedVisitId.id = this.SelectedVisitId.forDelete;
-          this.SelectedVisitId.forDelete = "";
-          this.AddScroll=true;
-          
+          this.SelectedVisitId.id = this.SelectedVisitId.undoId;
+          this.SelectedVisitId.undoId = "";
+          this.AddScroll = true;
+
         } else if (props) {
           const body: IVisitBody = {
             name: stringGuard(props?.name),
@@ -102,7 +91,7 @@ export default defineComponent({
           if (method === "AddItem") {
             const res = await VisitHooks.postVisitHook(body);
             this.SelectedVisitId.id = stringGuard(res.visitId);
-            this.SelectedVisitId.forDelete = "";
+            this.SelectedVisitId.undoId = "";
             this.AddScroll = true;
           } else if (method === "EditItem") {
             await VisitHooks.putVisitHook(this.SelectedVisitId.id, body);
@@ -143,8 +132,8 @@ export default defineComponent({
       try {
         if (props?.method)
           await this.CallerWrapper(props?.method, props);
-          await this.getVisits();
-       
+        await this.getVisits();
+
       } catch (error) {
         console.error("unexpected error");
       }
@@ -152,17 +141,17 @@ export default defineComponent({
     //Dialog ok cancel event
     onDialogChoice: async function (props: IDialogItem) {
       if (props.event === "Ok")
-      await this.onDBChangeUpdate(props);
+        await this.onDBChangeUpdate(props);
       this.dialog.show = false;
     },
     //visitor selector
-    setSelectedVisitId(newId: string, forDelete:string) {
+    setSelectedVisitId(newId: string, newUndoId: string) {
       this.SelectedVisitId.id = newId;
-      this.SelectedVisitId.forDelete = forDelete;
+      this.SelectedVisitId.undoId = newUndoId;
     },
     //callback for from VisitsList 
-    offAddScroll(){
-      this.AddScroll=false;
+    offAddScroll() {
+      this.AddScroll = false;
     },
 
     //initial dialog modal form

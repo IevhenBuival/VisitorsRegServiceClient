@@ -1,13 +1,7 @@
 <template>
   <div class="container h-100 w-100 flex-fill flex-grow overflow-scroll">
-    <div
-      v-for="visit in OrderedVisits"
-      :key="visit.visitId"
-      :id="visit.visitId"
-      class="row"
-      v-bind:class="visit.visitId !== SelectedId ? 'bg-white' : 'bg-secondary'"
-      @click="onItemClick(visit.visitId)"
-    >
+    <div v-for="visit in OrderedVisits" :key="visit.visitId" :id="visit.visitId" class="row" v-bind:class="visit.visitId !== SelectedId.id ? 'bg-white' : 'bg-secondary'
+      " @click="onItemClick(visit.visitId)">
       <div class="col-4 border text-break">
         {{ visit.name }}
       </div>
@@ -23,6 +17,7 @@
 
 <script lang="ts">
 import { IOrder } from "@/types/OrderBy";
+import { ISelector } from "@/types/Selector";
 import IVisit from "@/types/visit";
 import { computed, defineComponent, PropType } from "vue";
 export default defineComponent({
@@ -40,11 +35,7 @@ export default defineComponent({
     },
     SelectedId: {
       required: true,
-      type: String,
-    },
-    forDeleteId: {
-      required: true,
-      type: String,
+      type: Object as PropType<ISelector>,
     },
     AddScroll: {
       required: true,
@@ -53,6 +44,8 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
+
+    //sort data according order
     const OrderedVisits = computed((): IVisit[] =>
       [...props.visits].sort((a: IVisit, b: IVisit): number =>
         a[props.order.order] > b[props.order.order]
@@ -60,38 +53,30 @@ export default defineComponent({
             ? -1
             : 1
           : props.order.reverse
-          ? 1
-          : -1
+            ? 1
+            : -1
       )
     );
-    //For Delete update props
+    //Define undoId for delete event
     const UpdateforDelete = (id: string) => {
       let beenCurrentNext = "";
-      let currentNow = "";
+      let currentNow = id;
+      const arrLenth = OrderedVisits.value.length;
       //empty currentid
-      if (id === "") {
-        if (OrderedVisits.value.length >= 2) {
-          currentNow = OrderedVisits.value[0].visitId;
-          beenCurrentNext = OrderedVisits.value[1].visitId;
-        } else if (OrderedVisits.value.length === 1) {
-          currentNow = OrderedVisits.value[0].visitId;
-          beenCurrentNext = "";
-        } else {
-          currentNow = "";
-          beenCurrentNext = "";
-        }
-      } else currentNow = id;
+      if (id === "" && arrLenth > 0) {
+        currentNow = OrderedVisits.value[0].visitId;
+      }
       const index = OrderedVisits.value.findIndex(
         (item) => item.visitId === currentNow
       );
-
-      if (OrderedVisits.value.length >= 2) {
-        const newindex = index - 1 > 0 ? index - 1 : 0;
-        beenCurrentNext = OrderedVisits.value[newindex].visitId;
+      if (index === 0) {
+        if (arrLenth >= 2) beenCurrentNext = OrderedVisits.value[1].visitId;
+      } else if (index > 0) {
+        beenCurrentNext = OrderedVisits.value[index - 1].visitId;
       }
-
       emit("reselectItem", currentNow, beenCurrentNext);
     };
+
     const onItemClick = (id: string) => {
       UpdateforDelete(id);
       emit("offAddScroll");
@@ -103,12 +88,13 @@ export default defineComponent({
   updated() {
     this.$nextTick(function () {
       //watch for actual props for delete
-      if (this.forDeleteId === "") {
-        this.UpdateforDelete(this.SelectedId);
+
+      if (this.SelectedId.undoId === "" || this.SelectedId.id === "") {
+        this.UpdateforDelete(this.SelectedId.id);
       }
       //scroll after create
       if (this.AddScroll) {
-        const targetId = this.SelectedId;
+        const targetId = this.SelectedId.id;
         const scrollToElement = () => {
           const el = document.getElementById(targetId);
           if (el) {
