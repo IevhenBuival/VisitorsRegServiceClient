@@ -15,7 +15,6 @@ export default defineComponent({});
 
   display: block;
   min-width: 165px;
-  min-height: 165px;
   animation: rotating 6s linear infinite;
 
   /*background: #3bde7c;*/

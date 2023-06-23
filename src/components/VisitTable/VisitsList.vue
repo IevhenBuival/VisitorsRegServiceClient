@@ -64,31 +64,33 @@ export default defineComponent({
           : -1
       )
     );
+    //For Delete update props
     const UpdateforDelete = (id: string) => {
-      let fordelete = "";
-      let currentid = "";
+      let beenCurrentNext = "";
+      let currentNow = "";
+      //empty currentid
       if (id === "") {
         if (OrderedVisits.value.length >= 2) {
-          currentid = OrderedVisits.value[0].visitId;
-          fordelete = OrderedVisits.value[1].visitId;
+          currentNow = OrderedVisits.value[0].visitId;
+          beenCurrentNext = OrderedVisits.value[1].visitId;
         } else if (OrderedVisits.value.length === 1) {
-          currentid = OrderedVisits.value[0].visitId;
-          fordelete = "";
+          currentNow = OrderedVisits.value[0].visitId;
+          beenCurrentNext = "";
         } else {
-          currentid = OrderedVisits.value[0].visitId;
-          fordelete = OrderedVisits.value[1].visitId;
+          currentNow = "";
+          beenCurrentNext = "";
         }
-      } else currentid = id;
+      } else currentNow = id;
       const index = OrderedVisits.value.findIndex(
-        (item) => item.visitId === currentid
+        (item) => item.visitId === currentNow
       );
 
       if (OrderedVisits.value.length >= 2) {
         const newindex = index - 1 > 0 ? index - 1 : 0;
-        fordelete = OrderedVisits.value[newindex].visitId;
+        beenCurrentNext = OrderedVisits.value[newindex].visitId;
       }
 
-      emit("reselectItem", currentid, fordelete);
+      emit("reselectItem", currentNow, beenCurrentNext);
     };
     const onItemClick = (id: string) => {
       UpdateforDelete(id);
@@ -100,10 +102,11 @@ export default defineComponent({
 
   updated() {
     this.$nextTick(function () {
+      //watch for actual props for delete
       if (this.forDeleteId === "") {
         this.UpdateforDelete(this.SelectedId);
       }
-
+      //scroll after create
       if (this.AddScroll) {
         const targetId = this.SelectedId;
         const scrollToElement = () => {

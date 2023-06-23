@@ -102,6 +102,7 @@ export default defineComponent({
           if (method === "AddItem") {
             const res = await VisitHooks.postVisitHook(body);
             this.SelectedVisitId.id = stringGuard(res.visitId);
+            this.SelectedVisitId.forDelete = "";
             this.AddScroll = true;
           } else if (method === "EditItem") {
             await VisitHooks.putVisitHook(this.SelectedVisitId.id, body);
