@@ -2,7 +2,7 @@
   <dialog ref="dialog" class="zindex-modal">
     <form class="ui form" novalidate novalidatemetod="dialog" @submit.prevent>
       <div class="container d-flex flex-column justify-content-between">
-        <h4>{{ dialogProps.type === 'RemoveItem'?title+":":title }}</h4>
+        <h4>{{ dialogProps.type === "RemoveItem" ? title + ":" : title }}</h4>
         <h3 v-if="dialogProps.type === 'RemoveItem'">
           {{ dialogProps.name + " " + dialogProps.surname }}
         </h3>
@@ -28,7 +28,7 @@
               type="button"
               :disabled="isSignupButtonDisabled"
               formmethod="dialog"
-              @click="onSabmitDialog"
+              @click="onSubmitDialog"
             >
               Підтвердити
             </button>
@@ -64,7 +64,7 @@ export default defineComponent({
       name: props.dialogProps.name ? props.dialogProps.name : "",
       surname: props.dialogProps.surname ? props.dialogProps.surname : "",
     });
-    
+
     const { errors } = useFormValidation();
     const { isSignupButtonDisabled } = useSubmitButtonState(dialogData, errors);
 
@@ -77,6 +77,7 @@ export default defineComponent({
     onMounted(() => {
       if (dialog.value) {
         dialog.value.showModal();
+        //click outer modal form listener
         dialog.value.addEventListener("click", (e) => {
           const dialogDimensions = dialog.value?.getBoundingClientRect();
           if (
@@ -102,7 +103,7 @@ export default defineComponent({
     },
   },
   methods: {
-    onSabmitDialog: function () {
+    onSubmitDialog: function () {
       const DialogProps: IDialogItem = {
         event: "Ok",
         method: this.dialogProps.type,

@@ -28,7 +28,7 @@ import { computed, defineComponent, PropType } from "vue";
 export default defineComponent({
   name: "VisitList",
   components: {},
-  emits: ["reselectItem","offAddScroll"],
+  emits: ["reselectItem", "offAddScroll"],
   props: {
     visits: {
       required: true,
@@ -42,18 +42,16 @@ export default defineComponent({
       required: true,
       type: String,
     },
-    forDeleteId:{
-      required:true,
+    forDeleteId: {
+      required: true,
       type: String,
     },
     AddScroll: {
       required: true,
       type: Boolean,
     },
-
-
   },
-  
+
   setup(props, { emit }) {
     const OrderedVisits = computed((): IVisit[] =>
       [...props.visits].sort((a: IVisit, b: IVisit): number =>
@@ -66,61 +64,57 @@ export default defineComponent({
           : -1
       )
     );
-    const UpdateforDelete=(id: string)=>{
+    const UpdateforDelete = (id: string) => {
       let fordelete = "";
       let currentid = "";
       if (id === "") {
-        if (OrderedVisits.value.length>=2) {
-        currentid = OrderedVisits.value[0].visitId;
-        fordelete=OrderedVisits.value[1].visitId;
-      }else if (OrderedVisits.value.length===1){
-        currentid = OrderedVisits.value[0].visitId;
-        fordelete="";
-      }else {
-        currentid = OrderedVisits.value[0].visitId;
-        fordelete = OrderedVisits.value[1].visitId;
-      }}else currentid=id;
-      const index = OrderedVisits.value.findIndex(item => item.visitId===currentid);
-      
-      if (OrderedVisits.value.length>=2) {
-        const newindex=((index-1)>0)?index-1:0;
-        fordelete=OrderedVisits.value[newindex].visitId;
+        if (OrderedVisits.value.length >= 2) {
+          currentid = OrderedVisits.value[0].visitId;
+          fordelete = OrderedVisits.value[1].visitId;
+        } else if (OrderedVisits.value.length === 1) {
+          currentid = OrderedVisits.value[0].visitId;
+          fordelete = "";
+        } else {
+          currentid = OrderedVisits.value[0].visitId;
+          fordelete = OrderedVisits.value[1].visitId;
+        }
+      } else currentid = id;
+      const index = OrderedVisits.value.findIndex(
+        (item) => item.visitId === currentid
+      );
+
+      if (OrderedVisits.value.length >= 2) {
+        const newindex = index - 1 > 0 ? index - 1 : 0;
+        fordelete = OrderedVisits.value[newindex].visitId;
       }
-      
-       
-      
-      emit("reselectItem", currentid,fordelete);
-    }
+
+      emit("reselectItem", currentid, fordelete);
+    };
     const onItemClick = (id: string) => {
       UpdateforDelete(id);
       emit("offAddScroll");
     };
 
-    return { OrderedVisits, onItemClick,UpdateforDelete };
+    return { OrderedVisits, onItemClick, UpdateforDelete };
   },
+
   updated() {
-  this.$nextTick(function () {
-    if (this.forDeleteId===""){
-      this.UpdateforDelete(this.SelectedId);
-    }
-
-
-     if (this.AddScroll)
-    { const targetId = this.SelectedId;
-    const scrollToElement = () =>  {
-
-    const el = document.getElementById(targetId);
-    if (el) {
-        el.scrollIntoView();
+    this.$nextTick(function () {
+      if (this.forDeleteId === "") {
+        this.UpdateforDelete(this.SelectedId);
       }
-    }
-   
-    scrollToElement();
-   
-  }
-  
-    
-  })
+
+      if (this.AddScroll) {
+        const targetId = this.SelectedId;
+        const scrollToElement = () => {
+          const el = document.getElementById(targetId);
+          if (el) {
+            el.scrollIntoView();
+          }
+        };
+        scrollToElement();
+      }
+    });
   },
 });
 </script>

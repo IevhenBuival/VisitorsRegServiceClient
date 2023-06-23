@@ -45,7 +45,6 @@ import IDialog, { IDialogItem, IDialogProps } from "@/types/Dialog";
 import stringGuard from "@/modules/stringGuard";
 import { findFirstFormSorted } from "./modules/findFirstFromSorted";
 
-//getVisits();
 
 export default defineComponent({
   name: "App",
@@ -59,7 +58,6 @@ export default defineComponent({
   },
   data() {
     return {
-      firstInVisit: "",
       loadDate: { error: { show: false, message: "" }, loading: true },
       dialog: { show: false, dialogProps: { type: "type" } } as IDialog,
     };
@@ -70,6 +68,7 @@ export default defineComponent({
     const Visits = [] as IVisit[];
     const AddScroll = ref(false);
 
+    //order state handling 
     const handleSorting = function (neworder: OrderBy) {
       if (order.value.order !== neworder) order.value.reverse = false;
       else order.value.reverse = !order.value.reverse;
@@ -79,7 +78,7 @@ export default defineComponent({
     return { Visits, handleSorting, order, SelectedVisitId,AddScroll };
   },
 
-  //
+  // Wrapper to work whith hook
   methods: {
     async CallerWrapper(method: string, props?: IDialogItem) {
       this.loadDate.error.show = false;
@@ -129,6 +128,7 @@ export default defineComponent({
       }
       this.loadDate.loading = false;
     },
+    //Refresh visitors data from DB
     async getVisits() {
       await this.CallerWrapper("GetAll").then(() => {
         this.SelectedVisitId.id =
@@ -137,33 +137,8 @@ export default defineComponent({
             : findFirstFormSorted(this.Visits, this.order);
       });
     },
-
-    setSelectedVisitId(newId: string, forDelete:string) {
-      this.SelectedVisitId.id = newId;
-      this.SelectedVisitId.forDelete = forDelete;
-    //  this.firstInVisit = index;
-    },
-    offAddScroll(){
-      this.AddScroll=false;
-    },
-
-    getCurrentVisitItem() {
-      return this.Visits.find((i) => i.visitId === this.SelectedVisitId.id);
-    },
-
-    onClickMenuButton: function (type: string) {
-      const props: IDialogProps = { type: type };
-      if (type !== "AddItem") {
-        const currentVisit = this.getCurrentVisitItem();
-        if (currentVisit) {
-          props.name = currentVisit.name;
-          props.surname = currentVisit.surname;
-        }
-      }
-      this.dialog.dialogProps = props;
-      this.dialog.show = true;
-    },
-    onDBCangeUpdate: async function (props: IDialogItem) {
+    //Call DB Changing by Metod
+    onDBChangeUpdate: async function (props: IDialogItem) {
       try {
         if (props?.method)
           await this.CallerWrapper(props?.method, props);
@@ -173,11 +148,36 @@ export default defineComponent({
         console.error("unexpected error");
       }
     },
+    //Dialog ok cancel event
     onDialogChoice: async function (props: IDialogItem) {
       if (props.event === "Ok")
-      await this.onDBCangeUpdate(props);
+      await this.onDBChangeUpdate(props);
       this.dialog.show = false;
     },
+    //visitor selector
+    setSelectedVisitId(newId: string, forDelete:string) {
+      this.SelectedVisitId.id = newId;
+      this.SelectedVisitId.forDelete = forDelete;
+    },
+    //callback for from VisitsList 
+    offAddScroll(){
+      this.AddScroll=false;
+    },
+
+    //initial dialog modal form
+    onClickMenuButton: function (type: string) {
+      const props: IDialogProps = { type: type };
+      if (type !== "AddItem") {
+        const currentVisit = this.Visits.find((i) => i.visitId === this.SelectedVisitId.id);
+        if (currentVisit) {
+          props.name = currentVisit.name;
+          props.surname = currentVisit.surname;
+        }
+      }
+      this.dialog.dialogProps = props;
+      this.dialog.show = true;
+    },
+
   },
   mounted() {
     this.getVisits();
